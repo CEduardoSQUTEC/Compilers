@@ -1,0 +1,3 @@
+/home/ceduardosq/Documents/classes/compilers/lab03/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/ceduardosq/Documents/classes/compilers/lab03/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ceduardosq/Documents/classes/compilers/lab03/cmake-build-debug/CMakeFiles/tokenizer.dir

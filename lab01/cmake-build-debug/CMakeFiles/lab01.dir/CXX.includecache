@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/ceduardosq/Documents/classes/compilers/lab01/dfa.h
+unordered_map
+-
+unordered_set
+-
+string
+-
+
+/home/ceduardosq/Documents/classes/compilers/lab01/main.cpp
+iostream
+-
+dfa.h
+/home/ceduardosq/Documents/classes/compilers/lab01/dfa.h
+

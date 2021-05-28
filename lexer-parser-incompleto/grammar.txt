@@ -1,0 +1,19 @@
+exp := exp opsuma term | term
+opsuma := + | -
+term := term opmult factor | factor
+opmult := *
+factor := (exp) | num
+
+|
+|
+|
+
+exp := term {opsuma term}
+opsuma := + | -
+term := factor {opmult factor}
+opmult := *
+factor := (exp) | num
+
+// Los espacios, y fin de línea se deben de obviar.
+// La salida no va a ser 0 o 1, retornará el Arbol de Análisis, y la evaluación de la expresión.
+// Nos recuperamos del error y tratamos de continuar con el parsing.
