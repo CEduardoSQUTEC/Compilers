@@ -11,3 +11,11 @@ rule::rule(symbol *state) : state_(state) {}
 void rule::add_derivation(symbol *sym) { derivation_.push_back(sym); }
 
 rule::rule(symbol *state, std::vector<symbol *> derivation) : state_(state), derivation_(std::move(derivation)) {}
+
+const std::vector<symbol *> &rule::getDerivation() const {
+    return derivation_;
+}
+
+symbol *rule::getState() const {
+    return state_;
+}

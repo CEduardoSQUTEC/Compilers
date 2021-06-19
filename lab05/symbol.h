@@ -21,6 +21,8 @@ public:
     const std::string &getId() const;
 
     symbol_type getType() const;
+
+    void setType(symbol_type type);
 };
 
 

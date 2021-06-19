@@ -15,3 +15,7 @@ symbol::symbol_type symbol::getType() const {
 }
 
 symbol::symbol(std::string id, symbol::symbol_type type) : id_(std::move(id)), type_(type) {}
+
+void symbol::setType(symbol::symbol_type type) {
+    type_ = type;
+}

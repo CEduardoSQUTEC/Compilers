@@ -7,11 +7,19 @@
 
 #include "ll1_table.h"
 #include "grammar.h"
+#include <fstream>
 
 class syntax_analyzer {
-    ll1_table table_;
-    grammar grammar_;
+    ll1_table *table_;
+    grammar *grammar_;
+
+    void grammar_parse(std::istream &is);
+
 public:
+    syntax_analyzer(std::istream &is);
+
+    ~syntax_analyzer();
+
     /*
      * Facade
      * C++ or file should be here

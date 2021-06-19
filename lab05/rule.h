@@ -17,6 +17,10 @@ public:
     rule(symbol *state, std::vector<symbol *> derivation);
 
     void add_derivation(symbol *sym);
+
+    symbol *getState() const;
+
+    const std::vector<symbol *> &getDerivation() const;
 };
 
 #endif //LAB05_RULE_H
