@@ -13,10 +13,12 @@ class syntax_analyzer {
     ll1_table *table_;
     grammar *grammar_;
 
-    void grammar_parse(std::istream &is);
+    void grammar_parse(std::fstream &is);
 
 public:
-    syntax_analyzer(std::istream &is);
+    syntax_analyzer(std::fstream &is);
+
+    bool parse(std::string);
 
     ~syntax_analyzer();
 

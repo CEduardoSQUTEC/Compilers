@@ -17,6 +17,7 @@ class grammar {
     std::vector<rule *> rules_;
 public:
     grammar() = default;
+
     grammar(symbol *initial);
 
     void add_terminal(symbol *terminal);

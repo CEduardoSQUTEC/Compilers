@@ -1,0 +1,5 @@
+A -> x C B
+B -> z
+B -> A x
+C -> y B z
+C -> @

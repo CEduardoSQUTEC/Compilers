@@ -21,10 +21,13 @@ class ll1_table {
     std::unordered_map<std::string, symbol *> first_set{};
     std::unordered_map<std::string, symbol *> follow_set{};
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
+    bool status{};
 
     void build_first_set();
 
     void build_follow_set();
+
+    bool verify();
 
     void error_recovery();
 

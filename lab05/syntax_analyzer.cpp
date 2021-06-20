@@ -8,9 +8,8 @@
 #include <map>
 #include "syntax_analyzer.h"
 
-void syntax_analyzer::grammar_parse(std::istream &is) {
+void syntax_analyzer::grammar_parse(std::fstream &is) {
     std::string line;
-
     std::map<std::string, symbol *> symbol_by_name;
 
     while (getline(is, line)) {
@@ -32,8 +31,7 @@ void syntax_analyzer::grammar_parse(std::istream &is) {
             }
 
             symbol_by_name[name] = rule_symbol;
-        }
-        else {
+        } else {
             rule_symbol = it->second;
             rule_symbol->setType(symbol::symbol_type::non_terminal);
         }
@@ -53,8 +51,7 @@ void syntax_analyzer::grammar_parse(std::istream &is) {
             if (it == symbol_by_name.end()) {
                 derivation_symbol = new symbol(name, symbol::symbol_type::terminal);
                 symbol_by_name[name] = derivation_symbol;
-            }
-            else {
+            } else {
                 derivation_symbol = it->second;
             }
 
@@ -67,14 +64,13 @@ void syntax_analyzer::grammar_parse(std::istream &is) {
     for (auto p : symbol_by_name) {
         if (p.second->getType() == symbol::symbol_type::non_terminal) {
             this->grammar_->add_non_terminal(p.second);
-        }
-        else {
+        } else {
             this->grammar_->add_terminal(p.second);
         }
     }
 }
 
-syntax_analyzer::syntax_analyzer(std::istream &is) {
+syntax_analyzer::syntax_analyzer(std::fstream &is) {
     grammar_parse(is);
     table_ = new ll1_table(grammar_);
 }
@@ -84,3 +80,7 @@ syntax_analyzer::~syntax_analyzer() {
     delete grammar_;
 }
 
+bool parse(std::string input) {
+    // TODO: Parse input with the built LL1 table
+    return 0;
+}
