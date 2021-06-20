@@ -21,3 +21,11 @@ void grammar::add_rule(rule *r) {
 const std::vector<rule *> &grammar::getRules() const {
     return rules_;
 }
+
+const std::unordered_map<std::string, symbol *> &grammar::getSetNonTerminals() const {
+    return set_non_terminals;
+}
+
+symbol *grammar::getInitial() const {
+    return initial_;
+}

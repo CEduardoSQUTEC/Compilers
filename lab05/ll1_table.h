@@ -8,8 +8,11 @@
 #include <unordered_map>
 #include <string>
 #include <fstream>
+#include <set>
+#include <unordered_set>
 #include "rule.h"
 #include "grammar.h"
+
 
 class ll1_table {
     /*
@@ -18,14 +21,14 @@ class ll1_table {
      * 2) Follow set
      * 3) explorer and extract errors
      */
-    std::unordered_map<std::string, symbol *> first_set{};
-    std::unordered_map<std::string, symbol *> follow_set{};
+    std::unordered_map<std::string, std::vector<symbol *>> first_set{};
+    std::unordered_map<std::string, std::unordered_set<symbol *>> follow_set{};
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
     bool status{};
 
-    void build_first_set();
+    void build_first_set(grammar *);
 
-    void build_follow_set();
+    void build_follow_set(grammar *);
 
     bool verify();
 

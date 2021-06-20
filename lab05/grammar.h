@@ -27,6 +27,10 @@ public:
     void add_rule(rule *r);
 
     const std::vector<rule *> &getRules() const;
+
+    const std::unordered_map<std::string, symbol *> &getSetNonTerminals() const;
+
+    symbol *getInitial() const;
 };
 
 #endif //LAB05_GRAMMAR_H
