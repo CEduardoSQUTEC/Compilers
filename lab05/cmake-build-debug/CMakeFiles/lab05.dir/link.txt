@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/lab05.dir/main.cpp.o CMakeFiles/lab05.dir/symbol.cpp.o CMakeFiles/lab05.dir/rule.cpp.o CMakeFiles/lab05.dir/grammar.cpp.o CMakeFiles/lab05.dir/ll1_table.cpp.o CMakeFiles/lab05.dir/syntax_analyzer.cpp.o -o lab05 
