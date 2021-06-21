@@ -4,19 +4,48 @@
 
 #include "ll1_table.h"
 
-void ll1_table::build_first_set(grammar *grammar) {
-    symbol *initial = grammar->getInitial();
-    const auto& non_terminal_map = grammar->getSetNonTerminals();
+bool ll1_table::add_set_to_set_without_void(std::unordered_set<symbol *> &b, std::unordered_set<symbol *> &a) {
+    bool is_there_void = false;
+    for (auto &e: b) {
+        if (e->getId() == "@") is_there_void = true;
+        a.insert(e);
+    }
+    return is_there_void;
+}
 
-    for(auto &nt: non_terminal_map) first_set[nt.first] = {nt.second};
+void ll1_table::build_first_set(grammar *grammar_) {
+    const auto &non_terminal_map = grammar_->getSetNonTerminals();
+    for (auto &nt: non_terminal_map) first_set[nt.first];
+
+    const auto &rules = grammar_->getRules();
 
     bool flag = true;
     while (flag) {
         flag = false;
+        for (auto &r: rules) {
+            auto state = r->getState();
+            const auto &X = r->getDerivation();
+            int initial_size = first_set[state->getId()].size();
 
-
-
+            int k = 0;
+            bool cont = true;
+            while (cont && k < X.size()) {
+                if (X[k]->getType() == symbol::symbol_type::non_terminal) {
+                    if (!add_set_to_set_without_void(first_set[X[k]->getId()], first_set[state->getId()]))
+                        cont = false;
+                } else {
+                    if (X[k]->getId() != "@") {
+                        first_set[state->getId()].insert(X[k]);
+                        cont = false;
+                    }
+                }
+                k++;
+            }
+            if (cont) first_set[state->getId()].insert(new symbol("@", symbol::symbol_type::terminal));
+            if (initial_size != first_set[state->getId()].size()) flag = true;
+        }
     }
+
 }
 
 void ll1_table::build_follow_set(grammar *grammar) {
@@ -26,8 +55,7 @@ void ll1_table::build_follow_set(grammar *grammar) {
     for (auto p : non_terminal_map) {
         if (p.second == initial) {
             this->follow_set[initial->getId()] = {non_terminal_map["$"]};
-        }
-        else {
+        } else {
             this->follow_set[initial->getId()] = {};
         }
     }
@@ -125,3 +153,4 @@ rule *ll1_table::get_rule(symbol *non_terminal, symbol *terminal) {
 void *ll1_table::set_rule(symbol *non_terminal, symbol *terminal, rule *r) {
     return nullptr;
 }
+

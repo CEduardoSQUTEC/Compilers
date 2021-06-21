@@ -26,6 +26,8 @@ class ll1_table {
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
     bool status{};
 
+    static bool add_set_to_set_without_void(std::unordered_set<symbol *> &b, std::unordered_set<symbol *> &a); // Is true if a void is found.
+
     void build_first_set(grammar *);
 
     void build_follow_set(grammar *);

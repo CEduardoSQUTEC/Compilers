@@ -7,14 +7,14 @@ using namespace std;
 
 int main(int argc, char **argv) {
     // Validate arguments
-    if (argc != 2) {
-        cerr << "error: Invalid number of arguments. Usage:" << argv[0] << " <grammar>" << endl;
-        return 1;
-    }
+//    if (argc != 2) {
+//        cerr << "error: Invalid number of arguments. Usage:" << argv[0] << " <grammar>" << endl;
+//        return 1;
+//    }
 
     // Receive file
-    string grammar_filename(argv[1]);
-//    string grammar_filename = "/Users/cesar.salcedo/Documents/courses/utec/2021-1/compiladores/repos/Compilers/lab05/grammar_test.bnf";
+//    string grammar_filename(argv[1]);
+    string grammar_filename = "/home/ceduardosq/Documents/classes/compilers/Compilers/lab05/grammar_test.bnf";
     fstream grammar_file(grammar_filename, ios::in);
 
     if (!grammar_file.is_open()) {
@@ -30,6 +30,5 @@ int main(int argc, char **argv) {
 
     while (getline(std::cin, input))
         cout << analyzer.parse(input) << endl;
-
     return 0;
 }
