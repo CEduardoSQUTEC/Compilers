@@ -21,10 +21,14 @@ class ll1_table {
      * 2) Follow set
      * 3) explorer and extract errors
      */
-    std::unordered_map<std::string, std::vector<symbol *>> first_set{};
+    std::unordered_map<std::string, std::unordered_set<std::string>> first_set{};
     std::unordered_map<std::string, std::unordered_set<symbol *>> follow_set{};
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
     bool status{};
+
+    void add_set_to_set(std::vector<symbol *> &b, std::vector<symbol *> &a);
+
+    void add_symbol_to_set(symbol *s, std::vector<symbol *> a);
 
     void build_first_set(grammar *);
 

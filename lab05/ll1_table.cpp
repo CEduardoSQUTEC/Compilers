@@ -4,18 +4,35 @@
 
 #include "ll1_table.h"
 
-void ll1_table::build_first_set(grammar *grammar) {
-    symbol *initial = grammar->getInitial();
-    const auto& non_terminal_map = grammar->getSetNonTerminals();
+void ll1_table::add_set_to_set(std::vector<symbol *> &b, std::vector<symbol *> &a) {
+}
 
-    for(auto &nt: non_terminal_map) first_set[nt.first] = {nt.second};
+void ll1_table::add_symbol_to_set(symbol *s, std::vector<symbol *> a) {
+
+}
+
+void ll1_table::build_first_set(grammar *grammar_) {
+    const auto &non_terminal_map = grammar_->getSetNonTerminals();
+    for (auto &nt: non_terminal_map) first_set[nt.first];
+
+    const auto &rules = grammar_->getRules();
 
     bool flag = true;
     while (flag) {
         flag = false;
+        for (auto &r: rules) {
+            auto state = r->getState();
+            const auto &derivation = r->getDerivation();
+
+            int k = 0;
+            bool cont = true;
+            while (cont && k < derivation.size()) {
+                derivation[k]->getId();
+                state->getId();
 
 
-
+            }
+        }
     }
 }
 
@@ -26,8 +43,7 @@ void ll1_table::build_follow_set(grammar *grammar) {
     for (auto p : non_terminal_map) {
         if (p.second == initial) {
             this->follow_set[initial->getId()] = {non_terminal_map["$"]};
-        }
-        else {
+        } else {
             this->follow_set[initial->getId()] = {};
         }
     }
@@ -71,3 +87,4 @@ rule *ll1_table::get_rule(symbol *non_terminal, symbol *terminal) {
 void *ll1_table::set_rule(symbol *non_terminal, symbol *terminal, rule *r) {
     return nullptr;
 }
+
