@@ -4,11 +4,11 @@
 
 #include "ll1_table.h"
 
-void ll1_table::add_set_to_set(std::vector<symbol *> &b, std::vector<symbol *> &a) {
-}
-
-void ll1_table::add_symbol_to_set(symbol *s, std::vector<symbol *> a) {
-
+void ll1_table::add_set_to_set_without_void(std::unordered_set<std::string> &b, std::unordered_set<std::string> &a) {
+    for (auto &e: b) {
+        if (e == "@") continue;
+        a.insert(e);
+    }
 }
 
 void ll1_table::build_first_set(grammar *grammar_) {
@@ -22,18 +22,28 @@ void ll1_table::build_first_set(grammar *grammar_) {
         flag = false;
         for (auto &r: rules) {
             auto state = r->getState();
-            const auto &derivation = r->getDerivation();
+            const auto &X = r->getDerivation();
+            int initial_size = first_set[state->getId()].size();
 
             int k = 0;
             bool cont = true;
-            while (cont && k < derivation.size()) {
-                derivation[k]->getId();
-                state->getId();
-
-
+            while (cont && k < X.size()) {
+                if (X[k]->getType() == symbol::symbol_type::non_terminal) {
+                    add_set_to_set_without_void(first_set[X[k]->getId()], first_set[state->getId()]);
+                    if (first_set[X[k]->getId()].find("@") == first_set[X[k]->getId()].end()) cont = false;
+                } else {
+                    if (X[k]->getId() != "@") {
+                        first_set[state->getId()].insert(X[k]->getId());
+                        cont = false;
+                    }
+                }
+                k++;
             }
+            if (cont) first_set[state->getId()].insert("@");
+            if (initial_size != first_set[state->getId()].size()) flag = true;
         }
     }
+
 }
 
 void ll1_table::build_follow_set(grammar *grammar) {

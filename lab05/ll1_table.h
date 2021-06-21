@@ -26,9 +26,7 @@ class ll1_table {
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
     bool status{};
 
-    void add_set_to_set(std::vector<symbol *> &b, std::vector<symbol *> &a);
-
-    void add_symbol_to_set(symbol *s, std::vector<symbol *> a);
+    static void add_set_to_set_without_void(std::unordered_set<std::string> &b, std::unordered_set<std::string> &a);
 
     void build_first_set(grammar *);
 
