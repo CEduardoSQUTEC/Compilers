@@ -21,12 +21,12 @@ class ll1_table {
      * 2) Follow set
      * 3) explorer and extract errors
      */
-    std::unordered_map<std::string, std::unordered_set<std::string>> first_set{};
+    std::unordered_map<std::string, std::unordered_set<symbol *>> first_set{};
     std::unordered_map<std::string, std::unordered_set<symbol *>> follow_set{};
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
     bool status{};
 
-    static void add_set_to_set_without_void(std::unordered_set<std::string> &b, std::unordered_set<std::string> &a);
+    static bool add_set_to_set_without_void(std::unordered_set<symbol *> &b, std::unordered_set<symbol *> &a); // Is true if a void is found.
 
     void build_first_set(grammar *);
 

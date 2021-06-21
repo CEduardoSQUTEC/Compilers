@@ -4,11 +4,13 @@
 
 #include "ll1_table.h"
 
-void ll1_table::add_set_to_set_without_void(std::unordered_set<std::string> &b, std::unordered_set<std::string> &a) {
+bool ll1_table::add_set_to_set_without_void(std::unordered_set<symbol *> &b, std::unordered_set<symbol *> &a) {
+    bool is_there_void = false;
     for (auto &e: b) {
-        if (e == "@") continue;
+        if (e->getId() == "@") is_there_void = true;
         a.insert(e);
     }
+    return is_there_void;
 }
 
 void ll1_table::build_first_set(grammar *grammar_) {
@@ -29,17 +31,17 @@ void ll1_table::build_first_set(grammar *grammar_) {
             bool cont = true;
             while (cont && k < X.size()) {
                 if (X[k]->getType() == symbol::symbol_type::non_terminal) {
-                    add_set_to_set_without_void(first_set[X[k]->getId()], first_set[state->getId()]);
-                    if (first_set[X[k]->getId()].find("@") == first_set[X[k]->getId()].end()) cont = false;
+                    if (!add_set_to_set_without_void(first_set[X[k]->getId()], first_set[state->getId()]))
+                        cont = false;
                 } else {
                     if (X[k]->getId() != "@") {
-                        first_set[state->getId()].insert(X[k]->getId());
+                        first_set[state->getId()].insert(X[k]);
                         cont = false;
                     }
                 }
                 k++;
             }
-            if (cont) first_set[state->getId()].insert("@");
+            if (cont) first_set[state->getId()].insert(new symbol("@", symbol::symbol_type::terminal));
             if (initial_size != first_set[state->getId()].size()) flag = true;
         }
     }
