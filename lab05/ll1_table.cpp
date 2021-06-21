@@ -69,7 +69,7 @@ void ll1_table::build_follow_set(grammar *grammar) {
 
                 // If epsilon is in Primero(Xi+1 Xi+2 ... Xn)
                 if (j == derivation.size()) {
-                    auto rule_first_set = this->first_set[rule->getState()->getId()];
+                    auto rule_first_set = this->follow_set[rule->getState()->getId()];
                     this->follow_set[derivation[d_i]->getId()].insert(rule_first_set.begin(), rule_first_set.end());
                 }
 
