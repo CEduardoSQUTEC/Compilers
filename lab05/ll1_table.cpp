@@ -8,7 +8,7 @@ void ll1_table::build_first_set(grammar *grammar) {
     symbol *initial = grammar->getInitial();
     const auto& non_terminal_map = grammar->getSetNonTerminals();
 
-    for(auto &nt: non_terminal_map) first_set[nt.first] = nt.second;
+    for(auto &nt: non_terminal_map) first_set[nt.first] = {nt.second};
 
     bool flag = true;
     while (flag) {
@@ -54,6 +54,10 @@ ll1_table::ll1_table(grammar *grammar_) {
     build_follow_set(grammar_);
     status = verify();
     error_recovery();
+}
+
+bool ll1_table::verify() {
+    return false;
 }
 
 bool ll1_table::is_ll1_table() {

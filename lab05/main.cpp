@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
 
     // Receive file
     string grammar_filename(argv[1]);
+//    string grammar_filename = "/Users/cesar.salcedo/Documents/courses/utec/2021-1/compiladores/repos/Compilers/lab05/grammar_test.bnf";
     fstream grammar_file(grammar_filename, ios::in);
 
     if (!grammar_file.is_open()) {

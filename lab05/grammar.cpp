@@ -7,7 +7,7 @@
 grammar::grammar(symbol *initial) : initial_(initial) {}
 
 void grammar::add_terminal(symbol *terminal) {
-    set_non_terminals[terminal->getId()] = terminal;
+    set_terminals[terminal->getId()] = terminal;
 }
 
 void grammar::add_non_terminal(symbol *non_terminal) {

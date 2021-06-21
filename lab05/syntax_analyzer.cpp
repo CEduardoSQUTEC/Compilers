@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <vector>
 #include <map>
 #include "syntax_analyzer.h"
 
@@ -72,7 +71,7 @@ void syntax_analyzer::grammar_parse(std::fstream &is) {
     this->grammar_->add_terminal(new symbol("$", symbol::symbol_type::terminal));
 }
 
-syntax_analyzer::syntax_analyzer(std::fstream &is) {
+syntax_analyzer::syntax_analyzer(std::fstream &is) : grammar_(nullptr) {
     grammar_parse(is);
     table_ = new ll1_table(grammar_);
 }
@@ -82,7 +81,7 @@ syntax_analyzer::~syntax_analyzer() {
     delete grammar_;
 }
 
-bool parse(std::string input) {
+bool syntax_analyzer::parse(std::string input) {
     // TODO: Parse input with the built LL1 table
     return 0;
 }
