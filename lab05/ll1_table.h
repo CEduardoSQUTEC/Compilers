@@ -21,7 +21,7 @@ class ll1_table {
      * 2) Follow set
      * 3) explorer and extract errors
      */
-    std::unordered_map<std::string, std::vector<symbol *>> first_set{};
+    std::unordered_map<std::string, std::unordered_set<symbol *>> first_set{};
     std::unordered_map<std::string, std::unordered_set<symbol *>> follow_set{};
     std::unordered_map<std::string, std::unordered_map<std::string, rule *>> table_{};
     bool status{};

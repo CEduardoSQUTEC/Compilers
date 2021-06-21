@@ -29,3 +29,7 @@ const std::unordered_map<std::string, symbol *> &grammar::getSetNonTerminals() c
 symbol *grammar::getInitial() const {
     return initial_;
 }
+
+const std::unordered_map<std::string, symbol *> &grammar::getSetTerminals() const {
+    return set_terminals;
+}
