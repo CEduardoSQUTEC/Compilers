@@ -118,6 +118,8 @@ bool ll1_table::is_ll1_table() {
 
 rule *ll1_table::get_rule(symbol *non_terminal, symbol *terminal) {
     if (non_terminal->getType() != symbol::non_terminal || terminal->getType() != symbol::terminal) throw;
+
+    return this->table_[non_terminal->getId()][terminal->getId()];
 }
 
 void *ll1_table::set_rule(symbol *non_terminal, symbol *terminal, rule *r) {

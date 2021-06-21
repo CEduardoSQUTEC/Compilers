@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <stack>
 #include "syntax_analyzer.h"
 
 void syntax_analyzer::grammar_parse(std::fstream &is) {
@@ -83,6 +84,37 @@ syntax_analyzer::~syntax_analyzer() {
 }
 
 bool syntax_analyzer::parse(std::string input) {
-    // TODO: Parse input with the built LL1 table
-    return 0;
+    std::stringstream ss(input);
+
+    auto symbols_map = this->grammar_->getSetNonTerminals();
+    symbols_map.insert(this->grammar_->getSetTerminals().begin(), this->grammar_->getSetTerminals().end());
+
+    symbol *end_symbol = symbols_map["$"];
+
+
+    std::stack<symbol *> pila;
+    pila.push(end_symbol);
+    pila.push(this->grammar_->getInitial());
+    std::string s;
+    ss >> s;
+    while (pila.top() != end_symbol) {
+        if (pila.top()->getId() == s) {
+            pila.pop();
+            ss >> s;
+        }
+        else if (pila.top()->getType() == symbol::symbol_type::terminal) {
+            return false;
+        }
+        // else if (M[N,T] es un error) { error }
+        else {
+            symbol *ter = symbols_map[s];
+            rule *r = this->table_->get_rule(pila.top(), ter);
+            pila.pop();
+            for (auto derivation : r->getDerivation()) {
+                pila.push(derivation);
+            }
+        }
+    }
+
+    return true;
 }
