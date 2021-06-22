@@ -15,7 +15,7 @@ bool ll1_table::add_set_to_set_without_void(std::unordered_set<symbol *> &b, std
 
 void ll1_table::build_first_set(grammar *grammar_) {
     const auto &non_terminal_map = grammar_->getSetNonTerminals();
-    const auto &terminal_map = grammar_->getSetTerminals();
+    auto terminal_map = grammar_->getSetTerminals();
     for (auto &nt: non_terminal_map) first_set[nt.first];
 
     const auto &rules = grammar_->getRules();
@@ -52,19 +52,19 @@ void ll1_table::build_first_set(grammar *grammar_) {
 void ll1_table::build_follow_set(grammar *grammar) {
     symbol *initial = grammar->getInitial();
     auto non_terminal_map = grammar->getSetNonTerminals();
+    auto terminal_map = grammar->getSetTerminals();
 
     for (auto p : non_terminal_map) {
         if (p.second == initial) {
-            this->follow_set[initial->getId()] = {non_terminal_map["$"]};
+            this->follow_set[p.second->getId()] = {terminal_map["$"]};
         } else {
-            this->follow_set[initial->getId()] = {};
+            this->follow_set[p.second->getId()] = {};
         }
     }
 
     int i = 0, loops_unchanged = 1;
     auto rules = grammar->getRules();
     int num_rules = rules.size();
-    auto terminal_map = grammar->getSetTerminals();
     symbol *epsilon = terminal_map["@"];
 
     while (loops_unchanged <= num_rules) {
@@ -112,18 +112,6 @@ void ll1_table::build_follow_set(grammar *grammar) {
         i = (i + 1) % num_rules;
         loops_unchanged++;
     }
-
-    // TODO: Finish implementation
-    /**
-     *  while existan cambios
-     *      for cada seleccion de produccion A -> X1 X2 ... Xn do
-     *          for each Xi que sea un no terminal do
-     *              agregar Primero(Xi+1 Xi+2 ... Xn) - {epsilon} a Siguiente(Xn)
-     *              if epsilon esta en Primero(Xi+1 Xi+2 ... Xn) then
-     *                  agregue Siguiente(A) a Siguiente(Xi)
-     *
-     *  // Note que si i=n, entonces Xi+1 Xi+2 ... Xn = e
-     */
 }
 
 void ll1_table::error_recovery() {
@@ -135,6 +123,45 @@ ll1_table::ll1_table(grammar *grammar_) {
     build_follow_set(grammar_);
     status = verify();
     error_recovery();
+
+
+
+    auto non_terminal_map = grammar_->getSetNonTerminals();
+    auto terminal_map = grammar_->getSetTerminals();
+    auto rules = grammar_->getRules();
+
+    auto epsilon = terminal_map["@"];
+    terminal_map.erase("@");
+
+    for (auto r : rules) {
+        auto derivation = r->getDerivation();
+        if (derivation[0]->getId() == epsilon->getId()) continue;
+        if (derivation[0]->getType() == symbol::symbol_type::terminal) {
+            this->table_[r->getState()->getId()][derivation[0]->getId()] = r;
+        } else {
+            for (auto &e : this->first_set[derivation[0]->getId()]) {
+                this->table_[r->getState()->getId()][e->getId()] = r;
+            }
+        }
+    }
+
+    for (auto r : rules) {
+        auto derivation = r->getDerivation();
+        if (derivation[0]->getType() == symbol::symbol_type::terminal) {
+            if (derivation[0]->getId() == epsilon->getId()) {
+                for (auto &e : this->follow_set[r->getState()->getId()]) {
+                    this->table_[r->getState()->getId()][e->getId()] = r;
+                }
+            }
+        } else {
+            auto mapa = this->first_set[derivation[0]->getId()];
+            if (mapa.find(epsilon) != mapa.end()) {
+                for (auto &e : this->follow_set[r->getState()->getId()]) {
+                    this->table_[r->getState()->getId()][e->getId()] = r;
+                }
+            }
+        }
+    }
 }
 
 bool ll1_table::verify() {
@@ -146,8 +173,9 @@ bool ll1_table::is_ll1_table() {
 }
 
 rule *ll1_table::get_rule(symbol *non_terminal, symbol *terminal) {
-    if (non_terminal->getType() != symbol::non_terminal || terminal->getType() != symbol::terminal) throw;
+//    if (non_terminal->getType() != symbol::non_terminal || terminal->getType() != symbol::terminal) return nullptr;
 
+    if (this->table_[non_terminal->getId()].find(terminal->getId()) == this->table_[non_terminal->getId()].end()) return nullptr;
     return this->table_[non_terminal->getId()][terminal->getId()];
 }
 

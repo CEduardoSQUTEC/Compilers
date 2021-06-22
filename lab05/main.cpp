@@ -30,5 +30,6 @@ int main(int argc, char **argv) {
 
     while (getline(std::cin, input))
         cout << analyzer.parse(input) << endl;
+
     return 0;
 }

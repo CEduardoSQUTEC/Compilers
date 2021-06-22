@@ -88,6 +88,7 @@ bool syntax_analyzer::parse(std::string input) {
 
     auto symbols_map = this->grammar_->getSetNonTerminals();
     symbols_map.insert(this->grammar_->getSetTerminals().begin(), this->grammar_->getSetTerminals().end());
+    symbol *epsilon = symbols_map["@"];
 
     symbol *end_symbol = symbols_map["$"];
 
@@ -109,9 +110,13 @@ bool syntax_analyzer::parse(std::string input) {
         else {
             symbol *ter = symbols_map[s];
             rule *r = this->table_->get_rule(pila.top(), ter);
+            if (r == nullptr) return false;
             pila.pop();
-            for (auto derivation : r->getDerivation()) {
-                pila.push(derivation);
+            auto derivations = r->getDerivation();
+            for (int i = derivations.size() - 1; i >= 0; i--) {
+                if (derivations[i]->getId() != epsilon->getId()) {
+                    pila.push(derivations[i]);
+                }
             }
         }
     }
