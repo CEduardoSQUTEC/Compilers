@@ -15,6 +15,7 @@ bool ll1_table::add_set_to_set_without_void(std::unordered_set<symbol *> &b, std
 
 void ll1_table::build_first_set(grammar *grammar_) {
     const auto &non_terminal_map = grammar_->getSetNonTerminals();
+    const auto &terminal_map = grammar_->getSetTerminals();
     for (auto &nt: non_terminal_map) first_set[nt.first];
 
     const auto &rules = grammar_->getRules();
@@ -41,8 +42,7 @@ void ll1_table::build_first_set(grammar *grammar_) {
                 }
                 k++;
             }
-            
-            if (cont) first_set[state->getId()].insert(new symbol("@", symbol::symbol_type::terminal));
+            if (cont) first_set[state->getId()].insert(terminal_map["@"]);
             if (initial_size != first_set[state->getId()].size()) flag = true;
         }
     }
