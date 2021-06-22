@@ -61,6 +61,58 @@ void ll1_table::build_follow_set(grammar *grammar) {
         }
     }
 
+    int i = 0, loops_unchanged = 1;
+    auto rules = grammar->getRules();
+    int num_rules = rules.size();
+    auto terminal_map = grammar->getSetTerminals();
+    symbol *epsilon = terminal_map["@"];
+
+    while (loops_unchanged <= num_rules) {
+        rule *rule = rules[i];
+
+        auto derivation = rule->getDerivation();
+        for (int d_i = 0; d_i < derivation.size(); d_i++) {
+            if (derivation[d_i]->getType() == symbol::symbol_type::non_terminal) {
+                int j = d_i + 1;
+                std::unordered_set<symbol *> final_first_set = {epsilon};
+
+                // While there are epsilons, add first sets and advance to next symbol
+                while (j < derivation.size()) {
+                    if (derivation[j]->getType() == symbol::symbol_type::terminal) {
+                        final_first_set.insert(derivation[j]);
+                        break;
+                    }
+                    std::unordered_set<symbol *> &current_set = this->first_set[derivation[j]->getId()];
+
+                    final_first_set.insert(current_set.begin(), current_set.end());
+
+                    if (current_set.find(epsilon) == current_set.end()) break;
+                    j++;
+                }
+
+                // Erase epsilon
+                final_first_set.erase(epsilon);
+
+                int current_size = this->follow_set[derivation[d_i]->getId()].size();
+                this->follow_set[derivation[d_i]->getId()].insert(final_first_set.begin(), final_first_set.end());
+
+                // If epsilon is in Primero(Xi+1 Xi+2 ... Xn)
+                if (j == derivation.size()) {
+                    auto rule_first_set = this->follow_set[rule->getState()->getId()];
+                    this->follow_set[derivation[d_i]->getId()].insert(rule_first_set.begin(), rule_first_set.end());
+                }
+
+                // If some element is added to the follow set, continue iterating
+                if (current_size != this->follow_set[derivation[d_i]->getId()].size()) {
+                    loops_unchanged = 0;
+                }
+            }
+        }
+
+        i = (i + 1) % num_rules;
+        loops_unchanged++;
+    }
+
     // TODO: Finish implementation
     /**
      *  while existan cambios

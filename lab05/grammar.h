@@ -30,6 +30,8 @@ public:
 
     const std::unordered_map<std::string, symbol *> &getSetNonTerminals() const;
 
+    const std::unordered_map<std::string, symbol *> &getSetTerminals() const;
+
     symbol *getInitial() const;
 };
 
