@@ -67,7 +67,7 @@ void syntax_analyzer::grammar_parse(std::fstream &is) {
             this->grammar_->add_terminal(p.second);
         }
     }
-
+    this->grammar_->add_terminal(new symbol("@", symbol::symbol_type::terminal));
     this->grammar_->add_terminal(new symbol("$", symbol::symbol_type::terminal));
 }
 
