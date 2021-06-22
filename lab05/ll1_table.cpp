@@ -41,6 +41,7 @@ void ll1_table::build_first_set(grammar *grammar_) {
                 }
                 k++;
             }
+            
             if (cont) first_set[state->getId()].insert(new symbol("@", symbol::symbol_type::terminal));
             if (initial_size != first_set[state->getId()].size()) flag = true;
         }
