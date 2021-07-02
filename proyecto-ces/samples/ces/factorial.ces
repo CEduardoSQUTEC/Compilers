@@ -1,0 +1,29 @@
+entero factorial (entero x) {
+	entero fact;
+	fact = -1;
+
+	si (x < 0) { /** Checkear: no hay llaves en gramatica del if **/
+		fact = 1;
+		mientras (x > 0) {
+			fact = fact * x;
+			x = x - 1;
+		}
+	}
+
+	retorno x;
+}
+
+sin_tipo main() {
+	entero input;
+	entero output;
+
+	input = entrada();
+
+	si (input < 0) {
+		retorno;
+	}
+
+	output = factorial(input);
+
+	salida(output);
+}
