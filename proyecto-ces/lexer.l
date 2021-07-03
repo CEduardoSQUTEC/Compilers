@@ -34,8 +34,10 @@ salida  				{printf("TOKEN <SALIDA>");}
 []]       				{printf("TOKEN <R_BRA>");}
 [{]       				{printf("TOKEN <L_CUR>");}
 [}]       				{printf("TOKEN <R_CUR>");}
-[a-zA-z][a-zA-z0-9]*	{printf("TOKEN <ID>");}
-[1-9][0-9]*				{printf("TOKEN <NUM>");}
+[a-zA-z][a-zA-z0-9]*	{printf("TOKEN <ID %s>", yytext);}
+[1-9][0-9]*				{printf("TOKEN <NUM %s>", yytext);}
+\n						{printf("\n"); n_lines++;}
+.						{printf("Error en linea %d, caracter \'%s\' no soportado. ", n_lines, yytext);}
 %%
 
 int yywrap() {}
