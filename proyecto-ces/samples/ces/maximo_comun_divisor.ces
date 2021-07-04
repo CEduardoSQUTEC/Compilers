@@ -1,0 +1,18 @@
+entero gcd(entero a, entero b) {
+	if (b == 0) retornar a;
+	return gcd(b, mod(a, b));
+}
+
+sin_tipo main() {
+	entero a;
+	enteto b;
+	a = leer();
+	b = leer();
+	entero temp;
+	mientras (b != 0) { 
+		temp = b;
+		b = mod(a, b);
+		a = temp;
+	}
+	salida(a);
+}
