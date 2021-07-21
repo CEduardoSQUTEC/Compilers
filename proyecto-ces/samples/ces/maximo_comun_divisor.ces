@@ -5,14 +5,17 @@ entero gcd(entero a, entero b) {
 
 sin_tipo main() {
 	entero a;
-	enteto b;
-	a = leer();
-	b = leer();
+	entero b;
 	entero temp;
+
+	a = entrada();
+	b = entrada();
+
 	mientras (b != 0) { 
 		temp = b;
 		b = mod(a, b);
 		a = temp;
 	}
+
 	salida(a);
 }

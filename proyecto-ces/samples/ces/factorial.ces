@@ -1,7 +1,7 @@
 sin_tipo main() {
 	entero n;
-	n = leer()
 	entero ans;
+	n = entrada()
 	ans = 1;
 	si (n < 0) retornar;
 	mientras (n > 0) {

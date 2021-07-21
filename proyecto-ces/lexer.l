@@ -1,8 +1,17 @@
 %{
 #include <stdio.h>
 
+// #include "tok.h"
+// #include "heading.h"
+
+extern "C" int yylex();
+int yyerror(char *s);
+
 int n_lines = 1;
 %}
+
+digit		[0-9]
+letter		[a-zA-Z]
 
 %%
 entero  				{printf("TOKEN <ENTERO>");}
@@ -14,7 +23,7 @@ retorno 				{printf("TOKEN <RETORNO>");}
 main    				{printf("TOKEN <MAIN>");}
 entrada 				{printf("TOKEN <ENTRADA>");}
 salida  				{printf("TOKEN <SALIDA>");}
-[+]       				{printf("TOKEN <OP_PLUS>");}
+[+]     				{printf("TOKEN <OP_PLUS>");}
 [-]       				{printf("TOKEN <OP_MINUS>");}
 [*]       				{printf("TOKEN <OP_MUL>");}
 [/]       				{printf("TOKEN <OP_DIV>");}
@@ -34,10 +43,11 @@ salida  				{printf("TOKEN <SALIDA>");}
 []]       				{printf("TOKEN <R_BRA>");}
 [{]       				{printf("TOKEN <L_CUR>");}
 [}]       				{printf("TOKEN <R_CUR>");}
-[a-zA-z][a-zA-z0-9]*	{printf("TOKEN <ID %s>", yytext);}
-[1-9][0-9]*				{printf("TOKEN <NUM %s>", yytext);}
-\n						{printf("\n"); n_lines++;}
-.						{printf("Error en linea %d, caracter \'%s\' no soportado. ", n_lines, yytext);}
+{letter}({letter}|{digit})*			{printf("TOKEN <ID %s>", yytext);}
+{digit}+					{printf("TOKEN <NUM %s>", yytext);}
+\n					{yylineno++;}
+[\t ]+					{}
+.					{printf("Error en linea %d, caracter \'%s\' no soportado. ", n_lines, yytext);}
 %%
 
 int yywrap() {}
