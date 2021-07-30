@@ -7,7 +7,7 @@ struct type_val{
   int val;
 };
 
-map<string, type_val> table;
+std::map<string, type_val> table;
 
 void insert(string id, type_val val);
 bool find(string id);
@@ -17,7 +17,7 @@ void update(string, type_val new_val);
 %start programa 
 
 %union{
-  string* tipo_val;
+  std::string* tipo_val;
   int     num_val;
 }
 

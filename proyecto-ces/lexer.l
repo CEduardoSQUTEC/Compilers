@@ -17,7 +17,7 @@ si      						{return SI;}
 sino    						{return SINO;}
 mientras						{return MIENTRAS;}
 retorno 						{return RETORNO;}
-main    						{return MAIN>");}
+main    						{return MAIN;}
 entrada 						{return ENTRADA;}
 salida  						{return SALIDA;}
 [+]     						{return OP_PLUS;}
