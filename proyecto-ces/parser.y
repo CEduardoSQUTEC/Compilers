@@ -3,51 +3,37 @@
 #include <map>
 #include <vector>
 
+#include "types.h"
+
 int yyerror(char *s);
 int yyerror(std::string s);
 extern "C" int yylex();
 
-struct type_val{
-  int type;
-  int val;
-};
+std::vector<std::map<std::string, var_t> > table;
+typedef std::map<std::string, var_t>::iterator table_it;
 
-enum op_type {
-  PLUS,
-  MINUS,
-  MUL,
-  DIV,
-  MOD,
-  LT,
-  LE,
-  GT,
-  GE,
-  EQ,
-  NEQ,
-  ASSIGN
-};
-
-
-std::vector<std::map<std::string, type_val> > table;
-
-void insert(std::string id, type_val val);
+var_t *declare(std::string id, type_t type);
+var_t *get(std::string id);
 bool find(std::string id);
-void update(std::string, type_val new_val);
+bool find(std::string id, table_it &);
+void update(std::string, var_t *new_val);
 
 %}
 
 %start programa 
 
-%union{
-  int          datatype_val;
-  std::string* id_val;
+%union {
   int          num_val;
-  op_type      op_val;
+  std::string* id_val;
+  op_t         op_val;
+  type_t       type_val;
+  var_t        var_val;
+  var_t*       var_ref;
 }
 
-%token ENTERO
-%token BOOL
-%token SIN_TIPO
+%token <type_val> ENTERO
+%token <type_val> BOOL
+%token <type_val> SIN_TIPO
 %token SI
 %token SINO
 %token MIENTRAS
@@ -79,8 +65,15 @@ void update(std::string, type_val new_val);
 %token <id_val> ID
 %token <num_val> NUM
 
-%type <num_val> expresion_aditiva term factor
-%type <op_val> mulop addop
+%type <var_val> expresion
+%type <var_val> expresion_simple
+%type <var_val> expresion_aditiva
+%type <var_val> term
+%type <var_val> factor
+%type <var_val> call
+%type <var_ref> var
+%type <op_val> mulop addop relop
+%type <type_val> tipo
 
 %%
 
@@ -99,14 +92,23 @@ declaracion:
   ;
 
 var_declaracion:
-  tipo ID EOS |
+  tipo ID EOS {
+    var_t var;
+
+    var.type = $1;
+    var.val = 0;
+
+    // std::cout << &var << ' ' << var.type << ' ' << var.val << std::endl;
+
+    declare(*$2, $1);
+  } |
   tipo ID L_BRA NUM R_BRA EOS
   ;
 
 tipo:
-  SIN_TIPO |
-  ENTERO |
-  BOOL
+  SIN_TIPO {$$ = SIN_TIPO_T;} |
+  ENTERO {$$ = ENTERO_T;} |
+  BOOL {$$ = BOOL_T;}
   ;
 
 fun_declaracion:
@@ -161,72 +163,121 @@ sentencia_retorno:
   RETORNO expresion EOS ;
 
 expresion:
-  var OP_ASSIGN expresion |
-  expresion_simple ;
+  var OP_ASSIGN expresion {
+    $1->type = $3.type;
+    $1->val = $3.val;
+
+    $$ = $3;
+    std::cout << "Type: " << $$.type << " val: " << $$.val << std::endl;
+  } |
+  expresion_simple {
+    $$ = $1;
+    std::cout << "Type: " << $$.type << " val: " << $$.val << std::endl;
+  } ;
 
 var:
-  ID |
+  ID {
+    $$ = get(*$1);
+
+    // std::cout << "VAR " << $$->val << std::endl;
+  } |
   ID L_BRA expresion R_BRA ;
 
 expresion_simple:
-  expresion_aditiva relop expresion_aditiva |
-  expresion_aditiva ;
+  expresion_aditiva relop expresion_aditiva {
+    $$.type = BOOL_T;
+
+    if ($2 == LT_T) {
+      $$.val = $1.val < $3.val;
+    } else if ($2 == LE_T) {
+      $$.val = $1.val <= $3.val;
+    } else if ($2 == GT_T) {
+      $$.val = $1.val > $3.val;
+    } else if ($2 == GE_T) {
+      $$.val = $1.val >= $3.val;
+    } else if ($2 == EQ_T) {
+      $$.val = $1.val == $3.val;
+    } else if ($2 == NEQ_T) {
+      $$.val = $1.val != $3.val;
+    }
+  } |
+  expresion_aditiva {
+    $$ = $1;
+  } ;
 
 relop:
-  OP_LT |
-  OP_LE |
-  OP_GT |
-  OP_GE |
-  OP_EQ |
-  OP_NEQ ;
+  OP_LT {$$ = LT_T} |
+  OP_LE {$$ = LE_T} |
+  OP_GT {$$ = GT_T} |
+  OP_GE {$$ = GE_T} |
+  OP_EQ {$$ = EQ_T} |
+  OP_NEQ {$$ = NEQ_T} ;
 
 expresion_aditiva:
   expresion_aditiva addop term {
-    if ($2 == PLUS) {
-      $$ = $1 + $3;
-    } else if ($2 == MINUS) {
-      $$ = $1 - $3;
+    $$.type = ENTERO_T;
+
+    if ($2 == PLUS_T) {
+      $$.val = $1.val + $3.val;
+    } else if ($2 == MINUS_T) {
+      $$.val = $1.val - $3.val;
     }
-    std::cout << $$ << std::endl;
   } |
   term {
-    $$ = $1
+    $$.type = $1.type;
+    $$.val = $1.val;
   } ;
 
 addop:
-  OP_PLUS {$$ = PLUS;} |
-  OP_MINUS {$$ = MINUS;} ;
+  OP_PLUS {$$ = PLUS_T;} |
+  OP_MINUS {$$ = MINUS_T;} ;
 
 term:
   term mulop factor {
-    if ($2 == MUL) {
-      $$ = $1 * $3;
-    } else if ($2 == DIV) {
-      $$ = $1 / $3;
-    } else if ($2 == MOD) {
-      $$ = $1 % $3;
+    $$.type = ENTERO_T;
+
+    if ($2 == MUL_T) {
+      $$.val = $1.val * $3.val;
+    } else if ($2 == DIV_T) {
+      $$.val = $1.val / $3.val;
+    } else if ($2 == MOD_T) {
+      $$.val = $1.val % $3.val;
     }
   } |
   factor {
-    $$ = $1
+    $$.type = $1.type;
+    $$.val = $1.val;
   } ;
 
 mulop:
-  OP_MUL {$$ = MUL;} |
-  OP_DIV {$$ = DIV;} |
-  OP_MOD {$$ = MOD;} ; // Agregado a la gramatica
+  OP_MUL {$$ = MUL_T;} |
+  OP_DIV {$$ = DIV_T;} |
+  OP_MOD {$$ = MOD_T;} ; // Agregado a la gramatica
 
 factor:
-  L_PAR expresion R_PAR |
-  var |
-  call |
+  L_PAR expresion R_PAR {
+    $$.type = $2.type;
+    $$.val = $2.val;
+  } |
+  var {
+    $$.type = $1->type;
+    $$.val = $1->val;
+  } |
+  call {
+    $$.type = $1.type;
+    $$.val = $1.val;
+  } |
   NUM {
-    $$ = $1;
+    $$.type = ENTERO_T;
+    $$.val = $1;
   } ;
 
 call:
   ID L_PAR args R_PAR {
-    std::cout << *$1 << std::endl;
+    var_t *var = get(*$1);
+
+    $$.type = var->type;
+    $$.val = var->val;
   } ;
 
 args:
@@ -252,16 +303,65 @@ int yyerror(std::string s) {
   exit(1);
 }
 
-void insert(std::string id, type_val val){
-  table.back()[id] = val;
-}
-
-bool find(std::string id){
-  return table.back().find(id) != table.back().end();
-}
-
-void update(std::string id , type_val new_val) {
-  if (find(id)) {
-    table.back()[id] = new_val;
+var_t *declare(std::string id, type_t type) {
+  if (table.size() == 0) {
+    table.resize(1);
   }
+
+  if (table.back().find(id) != table.back().end()) {
+    yyerror("Symbol '" + id + "' already exists.");
+  }
+
+  var_t v;
+  table.back()[id] = v;
+
+  var_t *var = &table.back()[id];
+
+  var->type = type;
+  var->val = 0;
+
+  return var;
+}
+
+var_t *get(std::string id) {
+  table_it it;
+
+  if (!find(id, it)) {
+    yyerror("Undefined symbol '" + id + "'.");
+  }
+
+  // std::cout << "IN GET: " << it->second.val << std::endl;
+
+  return &it->second;
+}
+
+bool find(std::string id) {
+  table_it it;
+  return find(id, it);
+}
+
+bool find(std::string id, table_it &it) {
+  for (int i = table.size() - 1; i >= 0; i--) {
+    it = table[i].find(id);
+
+    if (it != table[i].end()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void update(std::string id , var_t *new_val) {
+  table_it it;
+
+  if (!find(id, it)) {
+    yyerror("Unsefiden symbol '" + id + "'.");
+  }
+  if (it->second.type != new_val->type) {
+    yyerror("No valid type conversion for variable '" + id + "'.");
+  }
+
+  it->second.type = new_val->type;
+  it->second.val = new_val->val;
 }

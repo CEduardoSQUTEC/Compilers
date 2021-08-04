@@ -2,20 +2,7 @@
 #include <stdio.h>
 #include <iostream>
 
-enum op_type {
-  PLUS,
-  MINUS,
-  MUL,
-  DIV,
-  MOD,
-  LT,
-  LE,
-  GT,
-  GE,
-  EQ,
-  NEQ,
-  ASSIGN
-};
+#include "types.h"
 
 #include "tok.h"
 
