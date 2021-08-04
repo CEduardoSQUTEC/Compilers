@@ -1,6 +1,7 @@
 %{
 #include <iostream>
 #include <map>
+#include <vector>
 
 int yyerror(char *s);
 int yyerror(std::string s);
@@ -12,11 +13,11 @@ struct type_val{
 };
 
 
-std::vector<std::map<string, type_val>> table;
+std::vector<std::map<std::string, type_val> > table;
 
-void insert(string id, type_val val);
-bool find(string id);
-void update(string, type_val new_val);
+void insert(std::string id, type_val val);
+bool find(std::string id);
+void update(std::string, type_val new_val);
 
 %}
 
@@ -64,7 +65,7 @@ void update(string, type_val new_val);
 %%
 
 programa: 
-  lista_declaracion {}
+  lista_declaracion
   ;
 
 lista_declaracion:
@@ -208,15 +209,15 @@ int yyerror(std::string s) {
   exit(1);
 }
 
-void insert(string id, type_val val){
+void insert(std::string id, type_val val){
   table.back()[id] = val;
 }
 
-bool find(string id){
+bool find(std::string id){
   return table.back().find(id) != table.back().end();
 }
 
-void update(string id , type_val new_val) {
+void update(std::string id , type_val new_val) {
   if (find(id)) {
     table.back()[id] = new_val;
   }

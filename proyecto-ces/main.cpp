@@ -26,8 +26,6 @@ int main(int argc, char **argv) {
 
 	yyparse();
 
-	yyparse();
-
 	/* 
 	* - Crear un archivo.
 	* - 
