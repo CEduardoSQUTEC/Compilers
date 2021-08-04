@@ -12,6 +12,21 @@ struct type_val{
   int val;
 };
 
+enum op_type {
+  PLUS,
+  MINUS,
+  MUL,
+  DIV,
+  MOD,
+  LT,
+  LE,
+  GT,
+  GE,
+  EQ,
+  NEQ,
+  ASSIGN
+};
+
 
 std::vector<std::map<std::string, type_val> > table;
 
@@ -24,9 +39,10 @@ void update(std::string, type_val new_val);
 %start programa 
 
 %union{
-  int          type_val;
+  int          datatype_val;
   std::string* id_val;
   int          num_val;
+  op_type      op_val;
 }
 
 %token ENTERO
@@ -39,18 +55,18 @@ void update(std::string, type_val new_val);
 %token MAIN
 %token ENTRADA
 %token SALIDA
-%token OP_PLUS
-%token OP_MINUS
-%token OP_MUL
-%token OP_DIV
-%token OP_MOD
-%token OP_LT
-%token OP_LE
-%token OP_GT
-%token OP_GE
-%token OP_EQ
-%token OP_NEQ
-%token OP_ASSIGN
+%token <op_val> OP_PLUS
+%token <op_val> OP_MINUS
+%token <op_val> OP_MUL
+%token <op_val> OP_DIV
+%token <op_val> OP_MOD
+%token <op_val> OP_LT
+%token <op_val> OP_LE
+%token <op_val> OP_GT
+%token <op_val> OP_GE
+%token <op_val> OP_EQ
+%token <op_val> OP_NEQ
+%token <op_val> OP_ASSIGN
 %token EOS
 %token COMMA
 %token L_PAR
@@ -60,8 +76,12 @@ void update(std::string, type_val new_val);
 %token L_CUR
 %token R_CUR
 
-%token <id_val>   ID
-%token <num_val>  NUM
+%token <id_val> ID
+%token <num_val> NUM
+
+%type <num_val> expresion_aditiva term factor
+%type <op_val> mulop addop
+
 %%
 
 programa: 
@@ -161,30 +181,53 @@ relop:
   OP_NEQ ;
 
 expresion_aditiva:
-  expresion_aditiva addop term |
-  term ;
+  expresion_aditiva addop term {
+    if ($2 == PLUS) {
+      $$ = $1 + $3;
+    } else if ($2 == MINUS) {
+      $$ = $1 - $3;
+    }
+    std::cout << $$ << std::endl;
+  } |
+  term {
+    $$ = $1
+  } ;
 
 addop:
-  OP_PLUS |
-  OP_MINUS ;
+  OP_PLUS {$$ = PLUS;} |
+  OP_MINUS {$$ = MINUS;} ;
 
 term:
-  term mulop factor |
-  factor;
+  term mulop factor {
+    if ($2 == MUL) {
+      $$ = $1 * $3;
+    } else if ($2 == DIV) {
+      $$ = $1 / $3;
+    } else if ($2 == MOD) {
+      $$ = $1 % $3;
+    }
+  } |
+  factor {
+    $$ = $1
+  } ;
 
 mulop:
-  OP_MUL |
-  OP_DIV |
-  OP_MOD; // Agregado a la gramatica
+  OP_MUL {$$ = MUL;} |
+  OP_DIV {$$ = DIV;} |
+  OP_MOD {$$ = MOD;} ; // Agregado a la gramatica
 
 factor:
   L_PAR expresion R_PAR |
   var |
   call |
-  NUM ;
+  NUM {
+    $$ = $1;
+  } ;
 
 call:
-  ID L_PAR args R_PAR ;
+  ID L_PAR args R_PAR {
+    std::cout << *$1 << std::endl;
+  } ;
 
 args:
   lista_arg |
