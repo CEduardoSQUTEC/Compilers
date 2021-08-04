@@ -1,24 +1,33 @@
-CXX = g++
+# Makefile
+
+OBJS	= bison.o lex.o main.o
+
+CC	= g++
 CFLAGS	= -g -Wall -ansi -pedantic
-OBJS = bison.o lexer.o
 
-all: main lexer
+parser:	$(OBJS)
+		$(CC) $(CFLAGS) $(OBJS) -o parser -ll
 
-main: main.cpp $(OBJS)
-	$(CXX) $< $(OBJS) -o $@ -lfl
+lex.o:		lex.c
+		$(CC) $(CFLAGS) -c lex.c -o lex.o
 
-lexer.o: lexer.l
-	lex lexer.l
-	$(CXX) $(CFLAGS) -c lex.yy.c -o $@
-	rm lex.yy.c
+lex.c:		lexer.l 
+		flex lexer.l
+		cp lex.yy.c lex.c
 
-bison.o: bison.c
-	$(CXX) $(CFLAGS) -c bison.c -o bison.o
+bison.o:	bison.c
+		$(CC) $(CFLAGS) -c bison.c -o bison.o
 
-bison.c: calc.y
-	bison -d -v calc.y
-	cp calc.tab.c bison.c
-	cmp -s calc.tab.h tok.h || cp calc.tab.h tok.h
+bison.c:	parser.y
+		bison -d -v parser.y
+		cp parser.tab.c bison.c
+		cmp -s parser.tab.h tok.h || cp parser.tab.h tok.h
+
+main.o:		main.cpp
+		$(CC) $(CFLAGS) -c $< -o $@
+
+lex.o bison.o main.o	: heading.h
+lex.o main.o			: tok.h
 
 clean:
-	rm -f main lexer.o*.o *~ lex.c lex.yy.c bison.c tok.h calc.tab.c calc.tab.h calc.output calc
+	rm -f *.o *~ lex.c lex.yy.c bison.c tok.h parser.tab.c parser.tab.h parser.output parser

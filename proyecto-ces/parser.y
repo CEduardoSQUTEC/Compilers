@@ -1,5 +1,9 @@
 %{
+#include <iostream>
+#include <map>
+
 int yyerror(char *s);
+int yyerror(std::string s);
 extern "C" int yylex();
 
 struct type_val{
@@ -7,21 +11,23 @@ struct type_val{
   int val;
 };
 
-std::map<string, type_val> table;
+std::map<std::string, type_val> table;
 
-void insert(string id, type_val val);
-bool find(string id);
-void update(string, type_val new_val);
+void insert(std::string id, type_val val);
+bool find(std::string id);
+void update(std::string, type_val new_val);
 %}
 
 %start programa 
 
 %union{
-  std::string* tipo_val;
-  int     num_val;
+  int          type_val;
+  std::string* id_val;
+  int          num_val;
 }
 
 %token ENTERO
+%token BOOL
 %token SIN_TIPO
 %token SI
 %token SINO
@@ -70,13 +76,14 @@ declaracion:
   ;
 
 var_declaracion:
-  ENTERO ID EOS |
-  ENTERO ID L_BRA NUM R_BRA EOS
+  tipo ID EOS |
+  tipo ID L_BRA NUM R_BRA EOS
   ;
 
 tipo:
+  SIN_TIPO |
   ENTERO |
-  SIN_TIPO
+  BOOL
   ;
 
 fun_declaracion:
@@ -93,8 +100,8 @@ list_params:
   ;
 
 param:
-  ENTERO ID |
-  ENTERO ID L_BRA R_BRA
+  tipo ID |
+  tipo ID L_BRA R_BRA
   ;
 
 sent_compuesta:
@@ -187,27 +194,27 @@ lista_arg:
 %%
 
 int yyerror(char *s) {
-  return yyerror(string(s));
+  return yyerror(std::string(s));
 }
 
-int yyerror(string s) {
+int yyerror(std::string s) {
   extern int yylineno;	// defined and maintained in lex.c
   extern char *yytext;	// defined and maintained in lex.c
 
-  cerr << "error: " << s << " at symbol \"" << yytext;
-  cerr << "\" on line " << yylineno << endl;
+  std::cerr << "error: " << s << " at symbol \"" << yytext;
+  std::cerr << "\" on line " << yylineno << std::endl;
   exit(1);
 }
 
 
-void insert(string id, type_val val){
+void insert(std::string id, type_val val){
   table[id] = val;
 }
 
-bool find(string id){
+bool find(std::string id){
   return table.find(id) != table.end();
 }
 
-void update(string, type_val new_val) {
+void update(std::string, type_val new_val) {
 
 }

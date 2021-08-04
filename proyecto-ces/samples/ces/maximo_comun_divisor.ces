@@ -1,6 +1,6 @@
 entero gcd(entero a, entero b) {
-	if (b == 0) retornar a;
-	return gcd(b, mod(a, b));
+	si (b == 0) retorno a;
+	retorno gcd(b, mod(a, b));
 }
 
 sin_tipo main() {

@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <iostream>
 
 #include "tok.h"
 
@@ -12,14 +13,12 @@ letter		[a-zA-Z]
 
 %%
 entero  						{return ENTERO;}
+bool  							{return BOOL;}
 sin_tipo						{return SIN_TIPO;}
 si      						{return SI;}
 sino    						{return SINO;}
 mientras						{return MIENTRAS;}
 retorno 						{return RETORNO;}
-main    						{return MAIN;}
-entrada 						{return ENTRADA;}
-salida  						{return SALIDA;}
 [+]     						{return OP_PLUS;}
 [-]       						{return OP_MINUS;}
 [*]       						{return OP_MUL;}
@@ -40,14 +39,16 @@ salida  						{return SALIDA;}
 []]       						{return R_BRA;}
 [{]       						{return L_CUR;}
 [}]       						{return R_CUR;}
-{letter}({letter}|{digit})*		{yylval.id_val = new std::string(yytext); return ID}
+{letter}({letter}|{digit})*		{yylval.id_val = new std::string(yytext); return ID;}
 {digit}+						{yylval.num_val = atoi(yytext); return NUM;}
 \n								{yylineno++;}
 [\t ]+							{}
-.								{yyerror("lexical")}
+.								{yyerror("lexical");}
 %%
 
-int yywrap() {}
-int main(int argc, char **argv) {
-	yylex();
-}
+// main    						{return MAIN;}
+// entrada 						{return ENTRADA;}
+// salida  						{return SALIDA;}
+
+
+/////////////////////////////////////////
