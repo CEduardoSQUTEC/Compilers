@@ -1,0 +1,13 @@
+entero a;
+entero b;
+
+sin_tipo main() {
+	a = 10;
+	b = 20;
+
+	salida(a);
+	salida(b);
+	salida(a + b);
+	salida(a / 2 + b * 5);
+	salida(a < b);
+}
