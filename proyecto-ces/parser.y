@@ -38,9 +38,6 @@ void update(std::string, var_t *new_val);
 %token SINO
 %token MIENTRAS
 %token RETORNO
-%token MAIN
-%token ENTRADA
-%token SALIDA
 %token <op_val> OP_PLUS
 %token <op_val> OP_MINUS
 %token <op_val> OP_MUL
@@ -72,6 +69,8 @@ void update(std::string, var_t *new_val);
 %type <var_val> factor
 %type <var_val> call
 %type <var_ref> var
+%type <var_val> args
+%type <var_val> lista_arg
 %type <op_val> mulop addop relop
 %type <type_val> tipo
 
@@ -93,13 +92,6 @@ declaracion:
 
 var_declaracion:
   tipo ID EOS {
-    var_t var;
-
-    var.type = $1;
-    var.val = 0;
-
-    // std::cout << &var << ' ' << var.type << ' ' << var.val << std::endl;
-
     declare(*$2, $1);
   } |
   tipo ID L_BRA NUM R_BRA EOS
@@ -168,11 +160,10 @@ expresion:
     $1->val = $3.val;
 
     $$ = $3;
-    std::cout << "Type: " << $$.type << " val: " << $$.val << std::endl;
   } |
   expresion_simple {
     $$ = $1;
-    std::cout << "Type: " << $$.type << " val: " << $$.val << std::endl;
+    // std::cout << "Type: " << $$.type << " val: " << $$.val << std::endl;
   } ;
 
 var:
@@ -274,19 +265,39 @@ factor:
 
 call:
   ID L_PAR args R_PAR {
-    var_t *var = get(*$1);
+    if (*$1 == "salida") {
+      if ($3.type == ENTERO_T) {
+        std::cout << $3.val << std::endl;
+      }
+      else if ($3.type == BOOL_T) {
+        std::cout << ($3.val == 0 ? "false" : "true") << std::endl;
+      }
+      $$.type = SIN_TIPO_T;
+      $$.val = 0;
+    }
+    else if (*$1 == "entrada") {
+      $$.type = ENTERO_T;
+      std::cin >> $$.val;
+    }
+    else {
+      var_t *var = get(*$1);
 
-    $$.type = var->type;
-    $$.val = var->val;
+      $$.type = var->type;
+      $$.val = var->val;
+    }
   } ;
 
 args:
-  lista_arg |
+  lista_arg {
+    $$ = $1;
+  } |
   ;
 
 lista_arg:
   lista_arg COMMA expresion |
-  expresion ;
+  expresion {
+    $$ = $1;
+  } ;
 
 %%
 
