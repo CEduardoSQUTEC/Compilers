@@ -1,0 +1,10 @@
+entero a;
+entero b;
+
+sin_tipo main() {
+	a=10;
+	b=10;
+
+	salida(a != b);
+	salida(a == b);
+}

@@ -77,7 +77,11 @@ void update(std::string, var_t *new_val);
 %%
 
 programa: 
-  lista_declaracion
+  lista_declaracion {
+    if (table[0].find("main") == table[0].end()) {
+      yyerror("No main function defined.");
+    }
+  }
   ;
 
 lista_declaracion:
@@ -104,7 +108,9 @@ tipo:
   ;
 
 fun_declaracion:
-  tipo ID L_PAR params R_PAR sent_compuesta
+  tipo ID L_PAR params R_PAR sent_compuesta {
+    declare(*$2, $1);
+  }
   ;
 
 params:
@@ -338,7 +344,7 @@ var_t *get(std::string id) {
   table_it it;
 
   if (!find(id, it)) {
-    yyerror("Undefined symbol '" + id + "'.");
+    yyerror("Undefined character '" + id + "'");
   }
 
   // std::cout << "IN GET: " << it->second.val << std::endl;
@@ -367,10 +373,10 @@ void update(std::string id , var_t *new_val) {
   table_it it;
 
   if (!find(id, it)) {
-    yyerror("Unsefiden symbol '" + id + "'.");
+    yyerror("Unsefiden symbol '" + id + "'");
   }
   if (it->second.type != new_val->type) {
-    yyerror("No valid type conversion for variable '" + id + "'.");
+    yyerror("No valid type conversion for variable '" + id + "'");
   }
 
   it->second.type = new_val->type;
