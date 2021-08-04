@@ -17,6 +17,19 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	yyparse();
+
+	/* 
+	* - Crear un archivo.
+	* - 
+	*
+	* 1) Definir los atributos. // Cesar & Eduardo
+	* 2) Hacer el arbol de depencias con atributos. // Cesar & Eduardo
+	* 3) Hacer las reglas semánticas. Verifición de atributos // Cesar
+	* 4) Estudiar las instrucciones de la Tiny Machine. Eduardo
+	* 5) Hacer las reglas tipo código P. Eduardo
+	*/
+
 	/**
 	// Some pseudocode to base our tokenizer
 

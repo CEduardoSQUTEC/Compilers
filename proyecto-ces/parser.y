@@ -7,11 +7,13 @@ struct type_val{
   int val;
 };
 
-std::map<string, type_val> table;
+
+std::vector<std::map<string, type_val>> table;
 
 void insert(string id, type_val val);
 bool find(string id);
 void update(string, type_val new_val);
+
 %}
 
 %start programa 
@@ -56,7 +58,7 @@ void update(string, type_val new_val);
 %%
 
 programa: 
-  lista_declaracion 
+  lista_declaracion {}
   ;
 
 lista_declaracion:
@@ -199,15 +201,16 @@ int yyerror(string s) {
   exit(1);
 }
 
-
 void insert(string id, type_val val){
-  table[id] = val;
+  table.back()[id] = val;
 }
 
 bool find(string id){
-  return table.find(id) != table.end();
+  return table.back().find(id) != table.back().end();
 }
 
-void update(string, type_val new_val) {
-
+void update(string id , type_val new_val) {
+  if (find(id)) {
+    table.back()[id] = new_val;
+  }
 }
